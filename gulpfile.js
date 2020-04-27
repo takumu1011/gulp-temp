@@ -11,7 +11,7 @@ var cssdeclsort = require('css-declaration-sorter'); //cssソート
 // scssのコンパイル
 gulp.task('sass', function() {
 return gulp
-.src( './src/assets/css/*.scss' )
+.src( 'src/assets/css/*.scss' )
 .pipe( plumber({ errorHandler: notify.onError("Error: <%= error.message %>") }) )//エラーチェック
 .pipe( sassGlob() )//importの読み込みを簡潔にする
 .pipe( sass({
@@ -25,7 +25,7 @@ browsers: ["last 2 versions", "ie >= 11", "Android >= 4"],
 cascade: false}
 ) ]) )
 .pipe( postcss([ cssdeclsort({ order: 'smacss' }) ]) )//プロパティをソートし直す(smacss順)
-.pipe(gulp.dest('./src/assets/css'));//コンパイル後の出力先
+.pipe(gulp.dest('src/assets/css'));//コンパイル後の出力先
 });
 
 // 保存時のリロード
@@ -48,11 +48,36 @@ done();
 
 // 監視
 gulp.task( 'watch', function(done) {
-gulp.watch( './src/assets/css/*.scss', gulp.task('sass') ); //sassが更新されたらgulp sassを実行
-gulp.watch('./src/assets/css/*.scss', gulp.task('bs-reload')); //sassが更新されたらbs-reloadを実行
-gulp.watch( './src/js/*.js', gulp.task('bs-reload') ); //jsが更新されたらbs-relaodを実行
-gulp.watch('./src/*.html', gulp.task('bs-reload')); //htmlが更新されたらbs-reloadを実行
+gulp.watch( 'src/assets/css/*.scss', gulp.task('sass') ); //sassが更新されたらgulp sassを実行
+gulp.watch('src/assets/css/*.scss', gulp.task('bs-reload')); //sassが更新されたらbs-reloadを実行
+gulp.watch( 'src/js/*.js', gulp.task('bs-reload') ); //jsが更新されたらbs-relaodを実行
+gulp.watch('src/*.html', gulp.task('bs-reload')); //htmlが更新されたらbs-reloadを実行
 });
 
 // default
 gulp.task('default', gulp.series(gulp.parallel('browser-sync', 'watch')));
+
+gulp.task('release', function() {
+    console.log('test発動');
+});
+
+//納品ファイル
+gulp.task('release', function(done) {
+    gulp.src([
+        'src/index.html'
+    ])
+    .pipe(gulp.dest('dist/'));
+    gulp.src([
+        'src/assets/css/style.css'
+    ])
+    .pipe(gulp.dest('dist/assets/css/'));
+    gulp.src([
+        'src/assets/js/script.js'
+    ])
+    .pipe(gulp.dest('dist/assets/js/'));
+    gulp.src([
+        'src/assets/img/**'
+    ])
+    .pipe(gulp.dest('dist/assets/img/'));
+    done();
+});
