@@ -72,6 +72,10 @@ gulp.task('release', function(done) {
     ])
     .pipe(gulp.dest('dist/assets/css/'));
     gulp.src([
+        'src/assets/css/default.css'
+    ])
+    .pipe(gulp.dest('dist/assets/css/'));
+    gulp.src([
         'src/assets/js/script.js'
     ])
     .pipe(gulp.dest('dist/assets/js/'));
