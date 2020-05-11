@@ -14,9 +14,12 @@
     "jquery": "^3.5.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
     "autoprefixer": "^9.7.1",
     "browser-sync": "^2.26.7",
     "css-declaration-sorter": "^4.0.1",
+    "gulp-babel": "^8.0.0",
     "gulp-notify": "^3.2.0",
     "gulp-plumber": "^1.2.1",
     "gulp-postcss": "^8.0.0",

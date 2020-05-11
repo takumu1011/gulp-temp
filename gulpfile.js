@@ -7,6 +7,7 @@ var browserSync = require( 'browser-sync' ); //ブラウザ反映
 var postcss = require('gulp-postcss'); //autoprefixerとセット
 var autoprefixer = require('autoprefixer'); //ベンダープレフィックス付与
 var cssdeclsort = require('css-declaration-sorter'); //cssソート
+var babel = require('gulp-babel'); //babel
 
 // scssのコンパイル
 gulp.task('sass', function() {
@@ -26,6 +27,15 @@ cascade: false}
 ) ]) )
 .pipe( postcss([ cssdeclsort({ order: 'smacss' }) ]) )//プロパティをソートし直す(smacss順)
 .pipe(gulp.dest('src/assets/css'));//コンパイル後の出力先
+});
+
+//babel
+gulp.task('babel', function() {
+    return gulp.src('src/assets/js/*.js')
+        .pipe(babel({
+            presets: ['@babel/preset-env']
+        }))
+        .pipe(gulp.dest('src/assets/js'));
 });
 
 // 保存時のリロード
@@ -50,16 +60,13 @@ done();
 gulp.task( 'watch', function(done) {
 gulp.watch( 'src/assets/css/*.scss', gulp.task('sass') ); //sassが更新されたらgulp sassを実行
 gulp.watch('src/assets/css/*.scss', gulp.task('bs-reload')); //sassが更新されたらbs-reloadを実行
-gulp.watch( 'src/js/*.js', gulp.task('bs-reload') ); //jsが更新されたらbs-relaodを実行
+gulp.watch('src/assets/js/*js', gulp.task('babel')); //jsが更新されたらgulp babelを実行
+gulp.watch('src/assets/js/*js', gulp.task('bs-reload')); //jsが更新されたらbs-reloadを実行
 gulp.watch('src/*.html', gulp.task('bs-reload')); //htmlが更新されたらbs-reloadを実行
 });
 
 // default
 gulp.task('default', gulp.series(gulp.parallel('browser-sync', 'watch')));
-
-gulp.task('release', function() {
-    console.log('test発動');
-});
 
 //納品ファイル
 gulp.task('release', function(done) {
@@ -67,18 +74,18 @@ gulp.task('release', function(done) {
         'src/index.html'
     ])
     .pipe(gulp.dest('dist/'));
+
     gulp.src([
-        'src/assets/css/style.css'
-    ])
-    .pipe(gulp.dest('dist/assets/css/'));
-    gulp.src([
+        'src/assets/css/style.css',
         'src/assets/css/default.css'
     ])
     .pipe(gulp.dest('dist/assets/css/'));
+    
     gulp.src([
         'src/assets/js/script.js'
     ])
     .pipe(gulp.dest('dist/assets/js/'));
+    
     gulp.src([
         'src/assets/img/**'
     ])
