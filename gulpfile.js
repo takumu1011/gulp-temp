@@ -29,15 +29,6 @@ cascade: false}
 .pipe(gulp.dest('src/assets/css'));//コンパイル後の出力先
 });
 
-//babel
-gulp.task('babel', function() {
-    return gulp.src('src/assets/js/*.js')
-        .pipe(babel({
-            presets: ['@babel/preset-env']
-        }))
-        .pipe(gulp.dest('src/assets/js'));
-});
-
 // 保存時のリロード
 gulp.task( 'browser-sync', function(done) {
 browserSync.init({
@@ -84,6 +75,9 @@ gulp.task('release', function(done) {
     gulp.src([
         'src/assets/js/script.js'
     ])
+    .pipe(babel({
+        presets: ['@babel/preset-env']
+    }))
     .pipe(gulp.dest('dist/assets/js/'));
     
     gulp.src([
