@@ -9,57 +9,55 @@ var autoprefixer = require('autoprefixer'); //ベンダープレフィックス�
 var cssdeclsort = require('css-declaration-sorter'); //cssソート
 var babel = require('gulp-babel'); //babel
 
-// scssのコンパイル
+// sass
 gulp.task('sass', function() {
-return gulp
-.src( 'src/assets/css/*.scss' )
-.pipe( plumber({ errorHandler: notify.onError("Error: <%= error.message %>") }) )//エラーチェック
-.pipe( sassGlob() )//importの読み込みを簡潔にする
-.pipe( sass({
-outputStyle: 'expanded' //expanded, nested, campact, compressedから選択
-}) )
-.pipe( postcss([ autoprefixer(
-{
-// ☆IEは11以上、Androidは4.4以上
-// その他は最新2バージョンで必要なベンダープレフィックスを付与する設定
-browsers: ["last 2 versions", "ie >= 11", "Android >= 4"],
-cascade: false}
-) ]) )
-.pipe( postcss([ cssdeclsort({ order: 'smacss' }) ]) )//プロパティをソートし直す(smacss順)
-.pipe(gulp.dest('src/assets/css'));//コンパイル後の出力先
+    return gulp
+        .src( 'src/assets/css/*.scss' )
+        .pipe( plumber({ errorHandler: notify.onError("Error: <%= error.message %>") }) ) //error check
+        .pipe( sassGlob() )
+        .pipe( sass({
+            outputStyle: 'expanded' //expanded, nested, campact, compressed
+        }) )
+        .pipe( postcss([ autoprefixer(
+            {
+            // ☆IEは11以上、Androidは4.4以上
+            // その他は最新2バージョンで必要なベンダープレフィックスを付与する設定
+                browsers: ["last 2 versions", "ie >= 11", "Android >= 4"],
+                cascade: false
+            }
+        ) ]) )
+        .pipe( postcss([ cssdeclsort({ order: 'smacss' }) ]) ) //sort(smacss順)
+        .pipe(gulp.dest('src/assets/css'));
 });
 
-// 保存時のリロード
+// browser-sync
 gulp.task( 'browser-sync', function(done) {
-browserSync.init({
-
-//ローカル開発
-server: {
-baseDir: "src",
-index: "index.html"
-}
-});
-done();
+    browserSync.init({
+        server: {
+        baseDir: "src",
+        index: "index.html"
+        }
+    });
+    done();
 });
 
+//bs-reload
 gulp.task( 'bs-reload', function(done) {
-browserSync.reload();
-done();
+    browserSync.reload();
+    done();
 });
 
-// 監視
+// watch
 gulp.task( 'watch', function(done) {
-gulp.watch( 'src/assets/css/*.scss', gulp.task('sass') ); //sassが更新されたらgulp sassを実行
-gulp.watch('src/assets/css/*.scss', gulp.task('bs-reload')); //sassが更新されたらbs-reloadを実行
-gulp.watch('src/assets/js/*js', gulp.task('babel')); //jsが更新されたらgulp babelを実行
-gulp.watch('src/assets/js/*js', gulp.task('bs-reload')); //jsが更新されたらbs-reloadを実行
-gulp.watch('src/*.html', gulp.task('bs-reload')); //htmlが更新されたらbs-reloadを実行
+gulp.watch( 'src/assets/css/*.scss', gulp.series('sass', 'bs-reload') ); 
+gulp.watch('src/assets/js/*js', gulp.series('babel', 'bs-reload')); 
+gulp.watch('src/*.html', gulp.task('bs-reload')); 
 });
 
 // default
-gulp.task('default', gulp.series(gulp.parallel('browser-sync', 'watch')));
+gulp.task('default', gulp.parallel('browser-sync', 'watch'));
 
-//納品ファイル
+//release
 gulp.task('release', function(done) {
     gulp.src([
         'src/index.html'
