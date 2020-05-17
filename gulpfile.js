@@ -12,30 +12,28 @@ var babel = require('gulp-babel'); //babel
 // sass
 gulp.task('sass', function() {
     return gulp
-        .src( 'src/assets/css/*.scss' )
-        .pipe( plumber({ errorHandler: notify.onError("Error: <%= error.message %>") }) ) //error check
-        .pipe( sassGlob() )
-        .pipe( sass({
-            outputStyle: 'expanded' //expanded, nested, campact, compressed
-        }) )
-        .pipe( postcss([ autoprefixer(
-            {
-            // ☆IEは11以上、Androidは4.4以上
-            // その他は最新2バージョンで必要なベンダープレフィックスを付与する設定
-                browsers: ["last 2 versions", "ie >= 11", "Android >= 4"],
-                cascade: false
-            }
-        ) ]) )
-        .pipe( postcss([ cssdeclsort({ order: 'smacss' }) ]) ) //sort(smacss順)
-        .pipe(gulp.dest('src/assets/css'));
+    .src( 'src/assets/css/*.scss' )
+    .pipe( plumber({ errorHandler: notify.onError("Error: <%= error.message %>") }) ) //error check
+    .pipe( sassGlob() )
+    .pipe( sass({
+        outputStyle: 'expanded' //expanded, nested, campact, compressed
+    }) )
+    .pipe( postcss([ autoprefixer(
+        {
+            browsers: ["last 2 versions", "ie >= 11", "Android >= 4"], // ☆IEは11以上、Androidは4.4以上 その他は最新2バージョンで必要なベンダープレフィックスを付与する設定
+            cascade: false 
+        }
+        )]))
+    .pipe( postcss([ cssdeclsort({ order: 'smacss' }) ]) ) //sort(smacss順)
+    .pipe(gulp.dest('src/assets/css'));
 });
 
 // browser-sync
 gulp.task( 'browser-sync', function(done) {
     browserSync.init({
         server: {
-        baseDir: "src",
-        index: "index.html"
+            baseDir: "src",
+            index: "index.html"
         }
     });
     done();
@@ -49,9 +47,9 @@ gulp.task( 'bs-reload', function(done) {
 
 // watch
 gulp.task( 'watch', function(done) {
-gulp.watch( 'src/assets/css/*.scss', gulp.series('sass', 'bs-reload') ); 
-gulp.watch('src/assets/js/*js', gulp.series('babel', 'bs-reload')); 
-gulp.watch('src/*.html', gulp.task('bs-reload')); 
+    gulp.watch( 'src/assets/css/*.scss', gulp.series('sass', 'bs-reload') ); 
+    gulp.watch('src/assets/js/*.js', gulp.task('bs-reload')); 
+    gulp.watch('src/*.html', gulp.task('bs-reload')); 
 });
 
 // default
@@ -63,7 +61,7 @@ gulp.task('release', function(done) {
         'src/index.html'
     ])
     .pipe(gulp.dest('dist/'));
-
+    
     gulp.src([
         'src/assets/css/style.css',
         'src/assets/css/default.css'
