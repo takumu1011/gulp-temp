@@ -39,17 +39,17 @@ gulp.task( 'browser-sync', function(done) {
     done();
 });
 
-//bs-reload
-gulp.task( 'bs-reload', function(done) {
+//reload
+gulp.task( 'reload', function(done) {
     browserSync.reload();
     done();
 });
 
 // watch
 gulp.task( 'watch', function(done) {
-    gulp.watch( 'src/assets/css/*.scss', gulp.series('sass', 'bs-reload') ); 
-    gulp.watch('src/assets/js/*.js', gulp.task('bs-reload')); 
-    gulp.watch('src/*.html', gulp.task('bs-reload')); 
+    gulp.watch( 'src/assets/css/*.scss', gulp.series('sass', 'reload') ); 
+    gulp.watch('src/assets/js/*.js', gulp.task('reload')); 
+    gulp.watch('src/*.html', gulp.task('reload')); 
 });
 
 // default
