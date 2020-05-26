@@ -10,26 +10,20 @@ var cssdeclsort = require('css-declaration-sorter'); //cssソート
 var babel = require('gulp-babel'); //babel
 
 // sass
-gulp.task('sass', function() {
-    return gulp
-    .src( 'src/assets/css/*.scss' )
-    .pipe( plumber({ errorHandler: notify.onError("Error: <%= error.message %>") }) ) //error check
-    .pipe( sassGlob() )
-    .pipe( sass({
-        outputStyle: 'expanded' //expanded, nested, campact, compressed
-    }) )
-    .pipe( postcss([ autoprefixer(
-        {
-            browsers: ["last 2 versions", "ie >= 11", "Android >= 4"], // ☆IEは11以上、Androidは4.4以上 その他は最新2バージョンで必要なベンダープレフィックスを付与する設定
-            cascade: false 
-        }
-        )]))
-    .pipe( postcss([ cssdeclsort({ order: 'smacss' }) ]) ) //sort(smacss順)
-    .pipe(gulp.dest('src/assets/css'));
-});
-
-// browser-sync
-gulp.task( 'browser-sync', function(done) {
+function compSass() {
+    return gulp.src('src/assets/css/*.scss')
+        .pipe(plumber({errorHandler: notify.onError("Error: <%= error.message %>")}))
+        .pipe(sassGlob())
+        .pipe(sass({outputStyle: 'expanded'}))
+        .pipe(postcss([autoprefixer({
+            browsers: ["last 2 versions", "ie >= 11", "Android >= 4"],
+            cascade: false
+        })]))
+        .pipe(postcss([cssdeclsort({order: 'smacss'})]))
+        .pipe(gulp.dest('src/assets/css'));
+}
+// serve
+function serve(done) {
     browserSync.init({
         server: {
             baseDir: "src",
@@ -37,48 +31,43 @@ gulp.task( 'browser-sync', function(done) {
         }
     });
     done();
-});
-
+}
 //reload
-gulp.task( 'reload', function(done) {
+function reload(done) {
     browserSync.reload();
     done();
-});
-
+}
 // watch
-gulp.task( 'watch', function(done) {
-    gulp.watch( 'src/assets/css/*.scss', gulp.series('sass', 'reload') ); 
-    gulp.watch('src/assets/js/*.js', gulp.task('reload')); 
-    gulp.watch('src/*.html', gulp.task('reload')); 
-});
-
-// default
-gulp.task('default', gulp.parallel('browser-sync', 'watch'));
-
+function watch(done) {
+    gulp.watch('src/assets/css/*.scss', gulp.series(compSass, reload));
+    gulp.watch('src/assets/js/*.js', reload);
+    gulp.watch('src/*.html', reload);
+}
 //release
-gulp.task('release', function(done) {
-    gulp.src([
-        'src/index.html'
-    ])
+function release(done) {
+    gulp.src('src/index.html')
     .pipe(gulp.dest('dist/'));
-    
+
     gulp.src([
         'src/assets/css/style.css',
         'src/assets/css/default.css'
     ])
     .pipe(gulp.dest('dist/assets/css/'));
-    
-    gulp.src([
-        'src/assets/js/script.js'
-    ])
+
+    gulp.src('src/assets/js/script.js')
     .pipe(babel({
         presets: ['@babel/preset-env']
     }))
     .pipe(gulp.dest('dist/assets/js/'));
-    
-    gulp.src([
-        'src/assets/img/**'
-    ])
-    .pipe(gulp.dest('dist/assets/img/'));
+
+    gulp.src('src/assets/img/**')
+    .pipe(gulp.dest('dist/assets/img'));
     done();
-});
+}
+
+exports.sass = compSass;
+exports.serve = serve;
+exports.reload = reload;
+exports.watch  = watch;
+exports.default = gulp.parallel(watch , serve);
+exports.release = release;
