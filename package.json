@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gulp": "^4.0.2",
     "jquery": "^3.5.0"
   },
   "devDependencies": {
@@ -19,7 +18,10 @@
     "autoprefixer": "^9.7.1",
     "browser-sync": "^2.26.7",
     "css-declaration-sorter": "^4.0.1",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-load-plugins": "^2.0.3",
     "gulp-notify": "^3.2.0",
     "gulp-plumber": "^1.2.1",
     "gulp-postcss": "^8.0.0",
