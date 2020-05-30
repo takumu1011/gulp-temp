@@ -1,14 +1,14 @@
 {
-  "name": "gulptest",
+  "name": "gulp-temp",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm install && npm run develop",
-    "develop": "gulp"
+    "start": "npm install && npm run dev",
+    "dev": "gulp",
+    "build": "gulp relase"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "jquery": "^3.5.0"
   },
@@ -28,6 +28,5 @@
     "gulp-rename": "^1.4.0",
     "gulp-sass": "^4.0.2",
     "gulp-sass-glob": "^1.1.0"
-  },
-  "description": ""
+  }
 }
