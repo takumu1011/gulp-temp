@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm install && npm run dev",
     "dev": "gulp",
-    "build": "gulp relase"
+    "build": "gulp release"
   },
   "author": "",
   "license": "MIT",
