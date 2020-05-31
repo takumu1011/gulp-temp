@@ -1,10 +1,10 @@
 const {src, dest, watch, series, parallel} = require('gulp');
 const loadPlugins = require('gulp-load-plugins');
 const $ = loadPlugins();
-const browserSync = require( 'browser-sync' ); 
-const postcss = require('gulp-postcss'); 
-const autoprefixer = require('autoprefixer'); 
-const cssdeclsort = require('css-declaration-sorter'); 
+const browserSync = require( 'browser-sync' );
+const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
+const cssdeclsort = require('css-declaration-sorter');
 
 //compSass
 function compSass() {
@@ -17,7 +17,16 @@ function compSass() {
             cascade: false
         })]))
         .pipe(postcss([cssdeclsort({order: 'smacss'})]))
-        .pipe(dest('src/assets/css'));
+        .pipe(dest('src/assets/css/'));
+}
+//babel
+function babel() {
+    return src('src/assets/js/main.js')
+    .pipe($.babel({
+        presets: ['@babel/preset-env']
+    }))
+    .pipe($.rename('script.js'))
+    .pipe(dest('src/assets/js/'));
 }
 // serve
 function serve(done) {
@@ -37,7 +46,7 @@ function reload(done) {
 // watching
 function watching(done) {
     watch('src/assets/css/*.scss', series(compSass, reload));
-    watch('src/assets/js/*.js', reload);
+    watch('src/assets/js/*.js', series(babel, reload));
     watch('src/*.html', reload);
 }
 //release
@@ -52,18 +61,16 @@ function release(done) {
     .pipe(dest('dist/assets/css/'));
 
     src('src/assets/js/script.js')
-    .pipe($.babel({
-        presets: ['@babel/preset-env']
-    }))
     .pipe(dest('dist/assets/js/'));
 
     src('src/assets/img/**')
     .pipe($.imagemin())
-    .pipe(dest('dist/assets/img'));
+    .pipe(dest('dist/assets/img/'));
     done();
 }
 
 exports.sass = compSass;
+exports.babel = babel;
 exports.serve = serve;
 exports.reload = reload;
 exports.watching = watching;
