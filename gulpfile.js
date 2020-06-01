@@ -46,7 +46,7 @@ function reload(done) {
 // watching
 function watching(done) {
     watch('src/assets/css/*.scss', series(compSass, reload));
-    watch('src/assets/js/*.js', series(babel, reload));
+    watch('src/assets/js/main.js', series(babel, reload));
     watch('src/*.html', reload);
 }
 //release
