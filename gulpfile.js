@@ -7,16 +7,23 @@ const autoprefixer = require('autoprefixer');
 const cssdeclsort = require('css-declaration-sorter');
 
 const paths = {
-  dist: 'dist/',
-  src: 'src/',
-  css: 'src/assets/css/',
-  js: 'src/assets/js/',
-  img: 'src/assets/img/',
+  dist: {
+    dist: 'dist/',
+    css: 'dist/assets/css/',
+    js: 'dist/assets/js/',
+    img: 'dist/assets/img/',
+  },
+  src: {
+    src: 'src/',
+    css: 'src/assets/css/',
+    js: 'src/assets/js/',
+    img: 'src/assets/img/',
+  },
 };
 
 //sass
 function sass() {
-  return src(paths.css + '*.scss')
+  return src(paths.src.css + '*.scss')
     .pipe(
       $.plumber({
         errorHandler: $.notify.onError('Error: <%= error.message %>'),
@@ -27,24 +34,24 @@ function sass() {
     .pipe(
       postcss([
         autoprefixer({
-          browsers: ['last 2 versions', 'ie >= 11', 'Android >= 4'],
           cascade: false,
         }),
       ])
     )
     .pipe(postcss([cssdeclsort({ order: 'smacss' })]))
-    .pipe(dest(paths.css));
+    .pipe(dest(paths.src.css));
 }
-//babel
-function babel() {
-  return src(paths.js + 'main.js')
+//typescript
+function typescript() {
+  return src(paths.src.js + '/*.ts')
     .pipe(
-      $.babel({
-        presets: ['@babel/preset-env'],
+      $.typescript({
+        noImplicitAny: false,
+        outFile: 'script.min.js',
       })
     )
-    .pipe($.rename('script.js'))
-    .pipe(dest(paths.js));
+    .pipe($.uglify())
+    .pipe(dest(paths.src.js));
 }
 // server
 function server(done) {
@@ -63,20 +70,23 @@ function reload(done) {
 }
 // watching
 function watching(done) {
-  watch(paths.src + '*.html', reload);
-  watch(paths.css + '*.scss', series(sass, reload));
-  watch(paths.js + 'main.js', series(babel, reload));
+  watch(paths.src.src + '*.html', reload);
+  watch(paths.src.css + '*.scss', series(sass, reload));
+  watch(paths.src.js + '*.ts', series(typescript, reload));
 }
 //build
-function release(done) {
-  src(paths.src + '**/**').pipe(dest(paths.dist));
-
-  src('src/assets/img/**').pipe($.imagemin()).pipe(dest('dist/assets/img/'));
+function build(done) {
+  src(paths.src.src + '*.html').pipe(dest(paths.dist.dist));
+  src(paths.src.css + '*.css').pipe(dest(paths.dist.css));
+  src(paths.src.js + '*.js').pipe(dest(paths.dist.js));
+  src(paths.src.img + '**')
+    .pipe($.imagemin())
+    .pipe(dest(paths.dist.img));
   done();
 }
 
 exports.sass = sass;
-exports.babel = babel;
+exports.typescript = typescript;
 exports.server = server;
 exports.reload = reload;
 exports.watching = watching;
