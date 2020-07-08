@@ -1,15 +1,13 @@
 {
   "name": "gulp-temp",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
     "start": "npm install && npm run dev",
     "dev": "gulp",
     "build": "gulp build"
   },
-  "author": "",
+  "author": "s-tkm",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^9.7.1",
     "browser-sync": "^2.26.7",
